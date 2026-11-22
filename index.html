@@ -8,8 +8,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="오답트래커" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/svg+xml" href="icon.svg" />
-  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
   <title>PSAT · 행정고시 성적 추세 &amp; AI 오답 약점 트래커</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -20,10 +20,7 @@
       <div class="header-inner">
         <div class="brand">
           <div class="brand-mark" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 3v18h18" />
-              <path d="m19 9-5 5-4-4-3 3" />
-            </svg>
+            <img src="icon-192.png" alt="" class="brand-icon-img" />
           </div>
           <div>
             <h1 class="brand-title">성적 추세 &amp; AI 오답 약점 트래커</h1>
@@ -76,8 +73,7 @@
       <section id="tab-dashboard" class="tab-panel active">
         <div class="panel-header-row">
           <div>
-            <h2>과목별 성적 추세 대시보드</h2>
-            <p class="muted">기출 및 모의고사 점수를 누적해 과목별 추이와 합산 성적을 확인하세요.</p>
+            <h2>성적 추세</h2>
           </div>
           <div class="filter-bar" id="score-subject-filters" role="group" aria-label="과목 필터">
             <button type="button" class="filter-pill active" data-subject="ALL">전체 과목</button>
@@ -251,8 +247,7 @@
       <section id="tab-analyzer" class="tab-panel">
         <div class="panel-header-row">
           <div>
-            <h2>틀린 문제 업로드 &amp; AI 자동 약점 분석기</h2>
-            <p class="muted">문제 캡처 이미지 또는 텍스트와 오답 메모를 입력하면 Gemini API가 세부 단원·문제 유형·핵심 약점·행동 교정 팁을 JSON으로 추출합니다.</p>
+            <h2>AI 오답 분석</h2>
           </div>
         </div>
 
@@ -266,9 +261,9 @@
             <form id="wrong-form" class="stack-form">
               <div class="score-link-box" id="wrong-score-link-box">
                 <div class="form-group">
-                  <label for="wrong-score-link">등록된 성적 기록 선택 (과목·날짜 자동 연동)</label>
+                  <label for="wrong-score-link">성적 기록 불러오기</label>
                   <select id="wrong-score-link">
-                    <option value="">+ 직접 입력 (성적 기록에 없는 문제집/기출)</option>
+                    <option value="">+ 직접 입력</option>
                   </select>
                 </div>
                 <div class="score-link-meta hidden" id="wrong-score-link-summary"></div>
@@ -293,19 +288,19 @@
               </div>
 
               <div class="form-group">
-                <label for="wrong-source">출처 / 문항 번호 (선택)</label>
-                <input type="text" id="wrong-source" placeholder="예: 17번 또는 2024 5급 17번" />
+                <label for="wrong-source" id="wrong-source-label">문항 번호 (선택)</label>
+                <input type="text" id="wrong-source" placeholder="예: 17번" />
               </div>
 
               <!-- Image Drop Zone -->
               <div class="form-group">
-                <label>문제 캡처 이미지 (선택 · 드래그 앤 드롭 / 파일 선택 / Ctrl+V 붙여넣기)</label>
+                <label>문제 이미지</label>
                 <div id="image-dropzone" class="dropzone" tabindex="0">
                   <input type="file" id="wrong-image-input" accept="image/*" hidden />
                   <div id="dropzone-placeholder" class="dropzone-placeholder">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-                    <p>이미지를 여기에 끌어다 놓거나 <strong>클릭하여 선택</strong>하세요</p>
-                    <span class="muted small">화면 캡처 후 이 영역에서 Ctrl+V 로 바로 붙여넣기 가능</span>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                    <p><strong>이미지 선택</strong> 또는 드래그</p>
+                    <span class="muted small desktop-only-hint">Ctrl+V 붙여넣기 가능</span>
                   </div>
                   <div id="dropzone-preview" class="dropzone-preview hidden">
                     <img id="wrong-image-preview" src="" alt="업로드된 문제 이미지" />
@@ -315,23 +310,23 @@
                 <input type="file" id="wrong-camera-input" accept="image/*" capture="environment" hidden />
                 <button type="button" id="btn-mobile-camera" class="btn btn-outline mobile-camera-btn">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                  <span>카메라로 문제 바로 찍기</span>
+                  <span>카메라로 바로 찍기</span>
                 </button>
               </div>
 
               <div class="form-group">
-                <label for="wrong-text">문제 텍스트 (이미지 대신 또는 함께 입력)</label>
-                <textarea id="wrong-text" rows="5" placeholder="틀린 문제의 지문, 발문, 선지를 붙여넣거나 핵심 내용을 적어주세요."></textarea>
+                <label for="wrong-text">문제 텍스트</label>
+                <textarea id="wrong-text" rows="4" placeholder="지문이나 핵심 내용을 입력하세요"></textarea>
               </div>
 
               <div class="form-row-2">
                 <div class="form-group">
-                  <label for="wrong-choice">내가 고른 오답 선지</label>
+                  <label for="wrong-choice">고른 오답</label>
                   <input type="text" id="wrong-choice" placeholder="예: 3번 (정답 2번)" />
                 </div>
                 <div class="form-group">
-                  <label for="wrong-reason">헷갈린 이유 / 실수 메모</label>
-                  <input type="text" id="wrong-reason" placeholder="예: 비율과 증가율을 혼동해 성급히 체크함" />
+                  <label for="wrong-reason">헷갈린 이유</label>
+                  <input type="text" id="wrong-reason" placeholder="예: 비율·증가율 혼동" />
                 </div>
               </div>
 
@@ -341,7 +336,7 @@
                   <span>AI 분석 및 저장</span>
                 </button>
                 <button type="button" class="btn btn-outline" id="btn-manual-save" title="API 호출 없이 직접 단원/유형을 입력해 저장합니다">
-                  직접 입력으로 저장
+                  직접 저장
                 </button>
                 <span id="analyze-status" class="status-text"></span>
               </div>
@@ -354,8 +349,8 @@
             <div class="card" id="extraction-editor-card">
               <div class="card-header">
                 <div>
-                  <h3 id="editor-card-title">AI 분석 결과 확인 · 직접 수정</h3>
-                  <p class="muted small" id="editor-card-subtitle">방금 저장한 오답 또는 선택한 오답의 분석 내용을 다듬고 태그를 추가할 수 있습니다.</p>
+                  <h3 id="editor-card-title">분석 결과 · 수정</h3>
+                  <p class="muted small" id="editor-card-subtitle">단원·유형·태그를 직접 수정할 수 있습니다.</p>
                 </div>
                 <span class="badge-soft" id="editor-badge">대기 중</span>
               </div>
@@ -426,8 +421,7 @@
       <section id="tab-report" class="tab-panel">
         <div class="panel-header-row">
           <div>
-            <h2>누적 약점 통계 리포트</h2>
-            <p class="muted">단원이나 문제 유형을 클릭하면 과거에 틀렸던 해당 문제와 AI 약점 코멘트를 한눈에 모아볼 수 있습니다.</p>
+            <h2>누적 약점 리포트</h2>
           </div>
           <div class="filter-bar" id="report-subject-filters" role="group" aria-label="리포트 과목 필터">
             <button type="button" class="filter-pill active" data-subject="ALL">전체 과목</button>
@@ -535,8 +529,7 @@
       <section id="tab-review" class="tab-panel">
         <div class="panel-header-row">
           <div>
-            <h2>오늘의 약점 복습 큐 (간격 반복)</h2>
-            <p class="muted">문제만 먼저 보고 떠올린 뒤 가림막을 열어 약점과 팁을 확인하세요. 복습 결과에 따라 다음 복습일이 자동 예약됩니다.</p>
+            <h2>오늘의 복습</h2>
           </div>
           <div class="filter-bar" id="review-subject-filters" role="group" aria-label="복습 과목 필터">
             <button type="button" class="filter-pill active" data-subject="ALL">전체 과목</button>
