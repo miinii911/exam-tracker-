@@ -1,0 +1,18 @@
+{
+  "name": "PSAT · 행정고시 성적 추세 & AI 오답 약점 트래커",
+  "short_name": "오답트래커",
+  "description": "과목별 성적 추세, AI 오답 약점 분석, 누적 리포트 및 간격 반복 복습 웹앱",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f6f9",
+  "theme_color": "#315efb",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
