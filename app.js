@@ -537,6 +537,7 @@
 
     if (rows.length === 0) {
       const tr = document.createElement('tr');
+      tr.className = 'score-empty-row';
       tr.innerHTML = `<td colspan="7" class="muted" style="text-align:center;padding:24px;">조건에 맞는 성적 기록이 없습니다.</td>`;
       tbody.appendChild(tr);
       return;
@@ -545,20 +546,23 @@
     rows.forEach((item) => {
       const color = S.getSubjectColor(item.subject, state.settings.theme);
       const durText = item.durationMinutes ? `${item.durationMinutes}분` : '-';
+      const hasDur = Boolean(item.durationMinutes);
+      const hasMemo = Boolean(item.memo && item.memo.trim());
       const tr = document.createElement('tr');
+      tr.className = 'score-row';
       tr.innerHTML = `
-        <td>${C.escapeHtml(item.date)}</td>
-        <td><strong>${C.escapeHtml(item.examType)}</strong></td>
-        <td>
+        <td class="td-date" data-label="날짜">${C.escapeHtml(item.date)}</td>
+        <td class="td-exam" data-label="시험"><strong>${C.escapeHtml(item.examType)}</strong></td>
+        <td class="td-subject" data-label="과목">
           <span class="subject-badge">
             <span class="subject-dot" style="background:${color}"></span>
             ${C.escapeHtml(item.subject)}
           </span>
         </td>
-        <td><strong>${Number(item.score).toFixed(1)}</strong>점</td>
-        <td class="muted">${C.escapeHtml(durText)}</td>
-        <td class="muted">${C.escapeHtml(item.memo || '-')}</td>
-        <td class="col-actions">
+        <td class="td-score" data-label="점수"><strong>${Number(item.score).toFixed(1)}</strong><span class="score-unit">점</span></td>
+        <td class="td-duration muted${hasDur ? '' : ' is-empty'}" data-label="소요">${C.escapeHtml(durText)}</td>
+        <td class="td-memo muted${hasMemo ? '' : ' is-empty'}" data-label="메모">${C.escapeHtml(item.memo || '-')}</td>
+        <td class="col-actions td-actions">
           <div class="table-actions">
             <button type="button" class="btn btn-ghost btn-sm btn-edit-score" data-id="${C.escapeHtml(item.id)}">수정</button>
             <button type="button" class="btn btn-ghost btn-sm danger-text btn-del-score" data-id="${C.escapeHtml(item.id)}">삭제</button>
