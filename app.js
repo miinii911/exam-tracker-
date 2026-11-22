@@ -197,6 +197,7 @@
     if (tabName === 'dashboard') {
       renderDashboard();
     } else if (tabName === 'analyzer') {
+      renderWrongScoreLinkOptions();
       renderWrongNotesList();
     } else if (tabName === 'report') {
       renderReport();
@@ -575,6 +576,7 @@
         <td class="td-memo muted${hasMemo ? '' : ' is-empty'}" data-label="메모">${C.escapeHtml(item.memo || '-')}</td>
         <td class="col-actions td-actions">
           <div class="table-actions">
+            <button type="button" class="btn btn-ghost btn-sm btn-add-wrong-from-score" data-id="${C.escapeHtml(item.id)}">오답 추가</button>
             <button type="button" class="btn btn-ghost btn-sm btn-edit-score" data-id="${C.escapeHtml(item.id)}">수정</button>
             <button type="button" class="btn btn-ghost btn-sm danger-text btn-del-score" data-id="${C.escapeHtml(item.id)}">삭제</button>
           </div>
@@ -602,6 +604,75 @@
   }
 
   // ==================== WRONG PROBLEM ANALYZER ====================
+  let wrongManualModeChosen = false;
+
+  function renderWrongScoreLinkOptions(preferredScoreId = null) {
+    const selectEl = document.getElementById('wrong-score-link');
+    if (!selectEl) return;
+
+    const prevValue = selectEl.value;
+    const sortedScores = [...state.scores].sort(
+      (a, b) => (b.date || '').localeCompare(a.date || '') || (b.createdAt || '').localeCompare(a.createdAt || '')
+    );
+
+    selectEl.innerHTML = '';
+    const manualOpt = document.createElement('option');
+    manualOpt.value = '';
+    manualOpt.textContent = sortedScores.length > 0
+      ? '+ 직접 입력 (성적 기록에 없는 문제집/기출)'
+      : '등록된 성적 기록 없음 (아래에서 직접 입력)';
+    selectEl.appendChild(manualOpt);
+
+    sortedScores.forEach((sc) => {
+      const opt = document.createElement('option');
+      opt.value = sc.id;
+      opt.textContent = `${sc.date} · ${sc.examType} · ${sc.subject} (${Number(sc.score).toFixed(1)}점)`;
+      selectEl.appendChild(opt);
+    });
+
+    if (preferredScoreId && sortedScores.some((s) => s.id === preferredScoreId)) {
+      selectEl.value = preferredScoreId;
+      wrongManualModeChosen = false;
+    } else if (prevValue && sortedScores.some((s) => s.id === prevValue)) {
+      selectEl.value = prevValue;
+    } else if (!wrongManualModeChosen && sortedScores.length > 0) {
+      selectEl.value = sortedScores[0].id;
+    } else {
+      selectEl.value = '';
+    }
+
+    applyLinkedScoreSelection();
+  }
+
+  function applyLinkedScoreSelection() {
+    const selectEl = document.getElementById('wrong-score-link');
+    const manualRow = document.getElementById('wrong-manual-meta-row');
+    const summaryEl = document.getElementById('wrong-score-link-summary');
+    const sourceEl = document.getElementById('wrong-source');
+    if (!selectEl || !manualRow || !summaryEl) return;
+
+    const selectedId = selectEl.value;
+    const linked = state.scores.find((s) => s.id === selectedId);
+
+    if (linked) {
+      document.getElementById('wrong-subject').value = linked.subject;
+      document.getElementById('wrong-date').value = linked.date;
+      manualRow.classList.add('hidden');
+      const color = S.getSubjectColor(linked.subject, state.settings.theme);
+      summaryEl.innerHTML = `
+        <span class="subject-badge"><span class="subject-dot" style="background:${color}"></span>${C.escapeHtml(linked.subject)}</span>
+        <span>${C.escapeHtml(linked.date)} · <strong>${C.escapeHtml(linked.examType)}</strong> (${Number(linked.score).toFixed(1)}점)</span>
+      `;
+      summaryEl.classList.remove('hidden');
+      if (sourceEl) sourceEl.placeholder = '예: 17번 (비워두면 시험명 자동 저장)';
+    } else {
+      manualRow.classList.remove('hidden');
+      summaryEl.classList.add('hidden');
+      summaryEl.innerHTML = '';
+      if (sourceEl) sourceEl.placeholder = '예: 2024 5급 17번';
+    }
+  }
+
   function setPendingImage(dataUrl) {
     state.pendingImageDataUrl = dataUrl;
     const placeholder = document.getElementById('dropzone-placeholder');
@@ -825,9 +896,17 @@
   }
 
   async function submitWrongNote({ useAi }) {
-    const subject = document.getElementById('wrong-subject').value;
-    const date = document.getElementById('wrong-date').value || todayStr();
-    const examSource = document.getElementById('wrong-source').value.trim();
+    const scoreLinkId = document.getElementById('wrong-score-link')?.value || '';
+    const linkedScore = scoreLinkId ? state.scores.find((s) => s.id === scoreLinkId) : null;
+
+    const subject = linkedScore ? linkedScore.subject : document.getElementById('wrong-subject').value;
+    const date = linkedScore ? linkedScore.date : (document.getElementById('wrong-date').value || todayStr());
+    const rawSource = document.getElementById('wrong-source').value.trim();
+    const examSource = linkedScore
+      ? (rawSource
+          ? (rawSource.includes(linkedScore.examType) ? rawSource : `${linkedScore.examType} ${rawSource}`)
+          : linkedScore.examType)
+      : rawSource;
     const questionText = document.getElementById('wrong-text').value.trim();
     const userChoice = document.getElementById('wrong-choice').value.trim();
     const confusionReason = document.getElementById('wrong-reason').value.trim();
@@ -923,6 +1002,7 @@
       date,
       subject,
       examSource,
+      linkedScoreId: linkedScore ? linkedScore.id : null,
       questionText,
       hasImage: Boolean(imageDataUrl),
       userChoice,
@@ -1616,6 +1696,7 @@
           statusEl.textContent = `복원 완료: 성적 ${result.addedScores}건, 오답 ${result.addedNotes}건 반영됨`;
           statusEl.className = 'status-text success';
           renderDashboard();
+          renderWrongScoreLinkOptions();
           renderWrongNotesList();
           renderReport();
           if (state.activeTab === 'review') renderReviewTab();
@@ -1647,6 +1728,7 @@
       updateBackupReminderUI();
       renderStorageStats();
       renderDashboard();
+      renderWrongScoreLinkOptions();
       renderWrongNotesList();
       renderReport();
       if (state.activeTab === 'review') renderReviewTab();
@@ -1669,6 +1751,7 @@
       renderStorageStats();
       closeEditor();
       renderDashboard();
+      renderWrongScoreLinkOptions();
       renderWrongNotesList();
       renderReport();
       if (state.activeTab === 'review') renderReviewTab();
@@ -1764,12 +1847,27 @@
       noteDataChanged();
       resetScoreForm();
       renderDashboard();
+      renderWrongScoreLinkOptions();
     });
 
     document.getElementById('btn-cancel-score-edit').addEventListener('click', resetScoreForm);
 
-    // Score Table Edit / Delete delegation
+    // Score Table Add-Wrong / Edit / Delete delegation
     document.getElementById('score-table-body').addEventListener('click', (e) => {
+      const addWrongBtn = e.target.closest('.btn-add-wrong-from-score');
+      if (addWrongBtn) {
+        const item = state.scores.find((s) => s.id === addWrongBtn.dataset.id);
+        if (!item) return;
+        switchTab('analyzer');
+        renderWrongScoreLinkOptions(item.id);
+        const wrongForm = document.getElementById('wrong-form');
+        const wrongSource = document.getElementById('wrong-source');
+        if (wrongForm) wrongForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (wrongSource) wrongSource.focus();
+        showToast(`${item.examType} · ${item.subject}(${item.date}) 기준으로 오답을 등록합니다.`);
+        return;
+      }
+
       const editBtn = e.target.closest('.btn-edit-score');
       if (editBtn) {
         const item = state.scores.find((s) => s.id === editBtn.dataset.id);
@@ -1797,6 +1895,7 @@
           resetScoreForm();
         }
         renderDashboard();
+        renderWrongScoreLinkOptions();
         showToast('성적 기록을 삭제했습니다.');
       }
     });
@@ -1860,6 +1959,12 @@
           }
         }
       }
+    });
+
+    // Linked score selector in Wrong Problem form
+    document.getElementById('wrong-score-link').addEventListener('change', (e) => {
+      wrongManualModeChosen = e.target.value === '';
+      applyLinkedScoreSelection();
     });
 
     // Wrong note submission
@@ -2050,6 +2155,7 @@
     document.getElementById('wrong-date').value = todayStr();
     initEvents();
     renderDashboard();
+    renderWrongScoreLinkOptions();
     renderWrongNotesList();
     renderReport();
     renderReviewTab();

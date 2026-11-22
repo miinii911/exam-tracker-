@@ -264,7 +264,17 @@
               <span class="badge-soft" id="analyzer-model-badge">Gemini 4 Hydrogen</span>
             </div>
             <form id="wrong-form" class="stack-form">
-              <div class="form-row-3">
+              <div class="score-link-box" id="wrong-score-link-box">
+                <div class="form-group">
+                  <label for="wrong-score-link">등록된 성적 기록 선택 (과목·날짜 자동 연동)</label>
+                  <select id="wrong-score-link">
+                    <option value="">+ 직접 입력 (성적 기록에 없는 문제집/기출)</option>
+                  </select>
+                </div>
+                <div class="score-link-meta hidden" id="wrong-score-link-summary"></div>
+              </div>
+
+              <div class="form-row-2" id="wrong-manual-meta-row">
                 <div class="form-group">
                   <label for="wrong-subject">과목</label>
                   <select id="wrong-subject" required>
@@ -280,10 +290,11 @@
                   <label for="wrong-date">날짜</label>
                   <input type="date" id="wrong-date" required />
                 </div>
-                <div class="form-group">
-                  <label for="wrong-source">출처 / 번호 (선택)</label>
-                  <input type="text" id="wrong-source" placeholder="예: 2024 5급 17번" />
-                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="wrong-source">출처 / 문항 번호 (선택)</label>
+                <input type="text" id="wrong-source" placeholder="예: 17번 또는 2024 5급 17번" />
               </div>
 
               <!-- Image Drop Zone -->

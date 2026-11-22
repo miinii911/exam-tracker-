@@ -831,7 +831,7 @@ textarea {
 }
 
 .col-actions {
-  width: 116px;
+  width: 184px;
   text-align: right !important;
   white-space: nowrap;
 }
@@ -870,6 +870,29 @@ textarea {
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   gap: 18px;
   align-items: start;
+}
+
+.score-link-box {
+  background: var(--accent-soft);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.score-link-box label {
+  color: var(--accent);
+}
+
+.score-link-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: var(--text-secondary);
 }
 
 .stack-col {
