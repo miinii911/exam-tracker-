@@ -239,6 +239,8 @@
   }
 
   function renderDashboardKPIs(filtered) {
+    const kpiGrid = document.getElementById('score-kpis');
+    const emptyHero = document.getElementById('score-empty-hero');
     const avgEl = document.getElementById('kpi-avg');
     const avgMeta = document.getElementById('kpi-avg-meta');
     const maxEl = document.getElementById('kpi-max');
@@ -249,9 +251,18 @@
     const totalEl = document.getElementById('kpi-total');
     const totalMeta = document.getElementById('kpi-total-meta');
 
+    if (state.scores.length === 0) {
+      if (kpiGrid) kpiGrid.classList.add('hidden');
+      if (emptyHero) emptyHero.classList.remove('hidden');
+      return;
+    }
+
+    if (kpiGrid) kpiGrid.classList.remove('hidden');
+    if (emptyHero) emptyHero.classList.add('hidden');
+
     if (filtered.length === 0) {
       avgEl.textContent = '-';
-      avgMeta.textContent = '기록된 성적이 없습니다';
+      avgMeta.textContent = state.scoreFilter === 'ALL' ? '기록된 성적이 없습니다' : `${state.scoreFilter} 기록이 없습니다`;
       maxEl.textContent = '-';
       maxMeta.textContent = '-';
       minEl.textContent = '-';
@@ -1331,17 +1342,37 @@
     }
 
     const emptyEl = document.getElementById('review-empty-state');
+    const emptyMsgEl = document.getElementById('review-empty-message');
+    const goRegisterBtn = document.getElementById('btn-go-register-wrong');
     const activeEl = document.getElementById('review-active-card');
     const progressEl = document.getElementById('review-progress-badge');
     const subjBadgeEl = document.getElementById('review-subject-badge');
     const dateSrcEl = document.getElementById('review-date-source');
+    const prevBtn = document.getElementById('btn-review-prev');
+    const nextBtn = document.getElementById('btn-review-next');
 
-    if (queue.length === 0) {
+    const isQueueEmpty = queue.length === 0;
+    if (prevBtn) prevBtn.disabled = isQueueEmpty;
+    if (nextBtn) nextBtn.disabled = isQueueEmpty;
+
+    if (isQueueEmpty) {
       emptyEl.classList.remove('hidden');
       activeEl.classList.add('hidden');
       progressEl.textContent = '0 / 0';
       subjBadgeEl.innerHTML = '';
       dateSrcEl.textContent = '';
+
+      if (state.wrongNotes.length === 0) {
+        if (emptyMsgEl) {
+          emptyMsgEl.textContent = '아직 등록된 오답이 없습니다. 틀린 문제를 등록하면 복습 대기열에 자동으로 추가됩니다.';
+        }
+        if (goRegisterBtn) goRegisterBtn.classList.remove('hidden');
+      } else {
+        if (emptyMsgEl) {
+          emptyMsgEl.textContent = '현재 선택한 과목 필터나 복습 모드에 해당하는 문제가 없습니다. 과목 필터나 복습 모드(미마스터 전체 · 전체 보기)를 변경해 보세요.';
+        }
+        if (goRegisterBtn) goRegisterBtn.classList.add('hidden');
+      }
     } else {
       emptyEl.classList.add('hidden');
       activeEl.classList.remove('hidden');
@@ -1924,6 +1955,23 @@
       renderMergePanel();
     });
     document.getElementById('btn-execute-subtopic-merge').addEventListener('click', executeSubtopicMerge);
+
+    // First score onboarding CTA
+    document.getElementById('btn-first-score-cta').addEventListener('click', () => {
+      const formEl = document.getElementById('score-form');
+      const dateInput = document.getElementById('score-date');
+      if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (dateInput) dateInput.focus();
+    });
+
+    // Empty review -> jump to wrong-problem registration
+    document.getElementById('btn-go-register-wrong').addEventListener('click', () => {
+      switchTab('analyzer');
+      const wrongForm = document.getElementById('wrong-form');
+      const wrongText = document.getElementById('wrong-text');
+      if (wrongForm) wrongForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (wrongText) wrongText.focus();
+    });
 
     // Review tab filters & flashcard actions
     document.getElementById('review-subject-filters').addEventListener('click', (e) => {

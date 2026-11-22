@@ -1,4 +1,5 @@
 :root {
+  color-scheme: light;
   /* Liquid Glass Light Theme (Pearl Sky Ambient + Frosted Glass) */
   --bg-app: #edf2fa;
   --bg-mesh:
@@ -51,6 +52,7 @@
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
   /* Liquid Glass Dark Theme (Library Night-Safe Midnight Obsidian) */
   --bg-app: #0a1019;
   --bg-mesh:
@@ -474,6 +476,30 @@ html, body {
   margin-left: 6px;
 }
 
+/* First Score Onboarding Empty Hero */
+.empty-hero-card {
+  margin-bottom: 18px;
+  padding: 16px 20px;
+}
+
+.empty-hero-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.empty-hero-content strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+
+.empty-hero-content p {
+  margin: 0;
+}
+
 /* KPI Grid */
 .kpi-grid {
   display: grid;
@@ -587,6 +613,29 @@ textarea:focus {
   border-color: var(--accent);
   background: var(--glass-bg-strong);
   box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #a7b2c2;
+  opacity: 1;
+}
+
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: brightness(1.15);
+  opacity: 0.92;
+  cursor: pointer;
+}
+
+[data-theme="dark"] select option {
+  background-color: #161f2d;
+  color: #eaf0f8;
 }
 
 textarea {
@@ -2196,6 +2245,32 @@ textarea {
   .modal-dialog {
     max-height: 88vh;
     overflow-y: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-bar {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    gap: 8px;
+    padding-bottom: 0;
+  }
+
+  .filter-pill {
+    min-height: 44px;
+    padding: 8px 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .empty-hero-card {
+    margin-bottom: 14px;
+    padding: 14px 15px;
+  }
+
+  .empty-hero-content .btn {
+    width: 100%;
   }
 }
 

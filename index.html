@@ -91,6 +91,17 @@
           </div>
         </div>
 
+        <!-- First Score Empty State (shown only when total scores === 0) -->
+        <div class="card empty-hero-card hidden" id="score-empty-hero">
+          <div class="empty-hero-content">
+            <div>
+              <strong>아직 기록된 성적이 없습니다</strong>
+              <p class="muted small">첫 시험 점수를 입력하면 평균·최고·최저 요약과 추이 그래프가 자동으로 표시됩니다.</p>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-first-score-cta">첫 성적 입력</button>
+          </div>
+        </div>
+
         <!-- KPI Summary Cards -->
         <div class="kpi-grid" id="score-kpis">
           <div class="kpi-card">
@@ -142,19 +153,20 @@
                 </div>
               </div>
 
-              <div class="form-row-3">
-                <div class="form-group">
-                  <label for="score-exam">시험 종류 (기출/모의)</label>
-                  <input type="text" id="score-exam" list="exam-suggestions" placeholder="예: 2025 5급 기출" required />
-                  <datalist id="exam-suggestions">
-                    <option value="2025 5급 기출"></option>
-                    <option value="2024 5급 기출"></option>
-                    <option value="2023 5급 기출"></option>
-                    <option value="법률저널 전국모의고사"></option>
-                    <option value="메가PSAT 모의고사"></option>
-                    <option value="합격의법학원 모의고사"></option>
-                  </datalist>
-                </div>
+              <div class="form-group">
+                <label for="score-exam">시험 종류 (기출/모의고사)</label>
+                <input type="text" id="score-exam" list="exam-suggestions" placeholder="예: 2025 5급 기출, 메가모의 3회" required />
+                <datalist id="exam-suggestions">
+                  <option value="2025 5급 기출"></option>
+                  <option value="2024 5급 기출"></option>
+                  <option value="2023 5급 기출"></option>
+                  <option value="법률저널 전국모의고사"></option>
+                  <option value="메가PSAT 모의고사"></option>
+                  <option value="합격의법학원 모의고사"></option>
+                </datalist>
+              </div>
+
+              <div class="form-row-2">
                 <div class="form-group">
                   <label for="score-value">점수 (0~100)</label>
                   <input type="number" id="score-value" min="0" max="100" step="0.5" placeholder="예: 82.5" required />
@@ -569,7 +581,8 @@
             </div>
 
             <div id="review-empty-state" class="empty-inline">
-              현재 선택한 조건에 복습할 문제가 없습니다. 모드를 <strong>미마스터 전체</strong>나 <strong>전체 보기</strong>로 전환하거나 새 오답을 등록해 보세요.
+              <p id="review-empty-message" style="margin:0;">현재 선택한 조건에 복습할 문제가 없습니다.</p>
+              <button type="button" class="btn btn-primary btn-sm hidden" id="btn-go-register-wrong" style="margin-top:10px;">오답 등록하기</button>
             </div>
 
             <div id="review-active-card" class="review-active-card hidden">
